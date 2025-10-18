@@ -19,5 +19,8 @@ RUN pip install --no-cache-dir \
     requests \
     python-dotenv
 
+# Exposer le port pour Render
+EXPOSE 5000
+
 # Lancer le bot
 CMD ["python", "trading_bot_allinone.py"]
