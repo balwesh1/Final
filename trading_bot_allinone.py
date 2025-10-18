@@ -3,14 +3,13 @@ import ccxt
 import pandas as pd
 import numpy as np
 import requests
-import time
+import asyncio
 from ta.trend import EMAIndicator
 from ta.momentum import RSIIndicator
 from telegram import Update
 from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes
 from dotenv import load_dotenv
 import alpaca_trade_api as tradeapi
-import threading
 
 # ------------------------ Load .env ------------------------
 load_dotenv()
@@ -159,8 +158,8 @@ app = ApplicationBuilder().token(BOT_TOKEN).build()
 app.add_handler(CommandHandler("start", start))
 app.add_handler(CommandHandler("status", status))
 
-# ------------------------ Loop Automatique ------------------------
-def main_loop():
+# ------------------------ Main Loop Async ------------------------
+async def main_loop():
     while True:
         try:
             # Backtest rapide sur tous les symboles et intervalles
@@ -173,11 +172,16 @@ def main_loop():
             run_analysis()
         except Exception as e:
             send_telegram_message(f"Erreur boucle : {e}")
-        time.sleep(300)  # toutes les 5 minutes
+        await asyncio.sleep(300)  # toutes les 5 minutes
 
 # ------------------------ Main ------------------------
 if __name__ == "__main__":
     send_telegram_message("Bot de trading initialisé 🔥")
-    thread = threading.Thread(target=main_loop)
-    thread.start()
-    app.run_polling()
+    loop = asyncio.get_event_loop()
+    loop.create_task(main_loop())
+    # Webhook version (Render)
+    app.run_webhook(
+        listen="0.0.0.0",
+        port=int(os.environ.get("PORT", 5000)),
+        webhook_url="https://TON_APP_ON_RENDER.onrender.com/"  # remplace par ton URL Render
+    )
