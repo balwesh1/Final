@@ -1,22 +1,21 @@
-# Utiliser python 3.11 slim
+# Utiliser Python 3.11 slim
 FROM python:3.11-slim
 
+# Définir le dossier de travail
 WORKDIR /app
 
-# Copier le fichier unique et .env
+# Copier le fichier Python unique et le .env
 COPY trading_bot_allinone.py .
 COPY .env .
 
-# Installer les dépendances
+# Installer toutes les dépendances nécessaires
 RUN pip install --no-cache-dir \
     ccxt \
     alpaca-trade-api \
     pandas \
     numpy \
     ta \
-    backtrader \
     python-telegram-bot==20.7 \
-    flask \
     requests \
     python-dotenv
 
